@@ -90,7 +90,7 @@ function update() {
 }
 // Apps Script のデプロイURL（/exec）を貼り付けます。
 // 未設定なら同梱の books.json を読み込みます。
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbyXLRZeXgETMqQ5vJTqu_0GpvRH27opU3YqmDpJgwsLHQIwCY2ityMSlx_fWTYaLDQvmw/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxiekEJjHkTgGnJb-mmjplYS26NHgEMdB5CtU1dwDaq3HmfaRXrWSCeDSBou-S6o3TL/exec';
 function loadJsonp(url) {
   return new Promise((resolve, reject) => {
     const callback = 'portalCallback_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);

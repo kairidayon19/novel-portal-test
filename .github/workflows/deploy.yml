@@ -1,0 +1,56 @@
+name: Deploy GitHub Pages (auto asset version)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Prepare site and stamp asset versions
+        env:
+          ASSET_VERSION: ${{ github.sha }}
+        run: |
+          python3 - <<'PYBUILD'
+          from pathlib import Path
+          import os, re, shutil
+          out = Path('_site')
+          out.mkdir(exist_ok=True)
+          for path in Path('.').iterdir():
+              if path.name in {'.git', '.github', '_site'}:
+                  continue
+              if path.is_dir():
+                  shutil.copytree(path, out / path.name, dirs_exist_ok=True)
+              elif path.is_file():
+                  shutil.copy2(path, out / path.name)
+          version = os.environ['ASSET_VERSION'][:12]
+          for name in ('index.html', 'contributors.html'):
+              page = out / name
+              if not page.exists():
+                  continue
+              html = page.read_text(encoding='utf-8')
+              for asset in ('style.css', 'app.js', 'contributors.js'):
+                  html = re.sub(r'(?<=["\'])' + re.escape(asset) + r'(?:\?v=[A-Za-z0-9._-]+)?(?=["\'])', asset + '?v=' + version, html)
+              page.write_text(html, encoding='utf-8')
+          PYBUILD
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

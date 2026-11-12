@@ -1,6 +1,11 @@
 'use strict';
 const $ = id => document.getElementById(id);
 let books = [], visible = [], shown = 0;
+const FAVORITES_KEY = "novel-portal-favorites-v1";
+let favorites = new Set();
+try { favorites = new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]")); } catch (e) { console.warn("お気に入りの読み込みに失敗", e); }
+function bookKey(b) { return [b.title,b.author,b.label].map(v=>String(v||"").trim().normalize("NFKC")).join("|釁|"); }
+function toggleFavorite(key) { if (favorites.has(key)) favorites.delete(key); else favorites.add(key); try {localStorage.setItem(FAVORITES_KEY,JSON.stringify([...favorites]));} catch(e) {console.warn("お気に入りの保存に失敗",e);} update(); }
 const PAGE_SIZE = 24;
 const collator = new Intl.Collator('ja', {numeric:true, sensitivity:'base'});
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -14,7 +19,10 @@ function makeCard(b) {
     ? `<img class="book-cover-image" src="${esc(coverUrl)}" alt="${esc(b.title)}の表紙" loading="lazy" referrerpolicy="no-referrer">`
     : '<div class="book-cover-placeholder" aria-label="表紙未登録">NO IMAGE</div>';
   const date=b.date?`${b.date.slice(0,4)}年${Number(b.date.slice(5))}月`:'発売年月未設定';
-  card.innerHTML=`<div class="book-body"><div class="book-cover">${coverHtml}</div><div class="book-details"><h3 class="book-title">${esc(b.title)}</h3><dl class="meta"><dt>著者</dt><dd>${esc(b.author)||'—'}</dd><dt>イラスト</dt><dd>${esc(b.illustrator)||'—'}</dd><dt>レーベル</dt><dd>${esc(b.label)||'—'}</dd><dt>ジャンル</dt><dd>${esc(b.genre)||'—'}</dd></dl><div class="tags"><span class="tag">${esc(date)}</span><span class="tag ${statusCls}">${esc(b.publication)||'未設定'}</span></div></div></div>${links?`<div class="links">${links}</div>`:''}`;
+  const key=bookKey(b);
+  const isFavorite=favorites.has(key);
+  card.innerHTML=`<div class="book-card-head"><span>${b.isNew?'<span class="new-badge">NEW</span>':''}</span><button class="favorite-button ${isFavorite?'is-favorite':''}" type="button" aria-pressed="${isFavorite}" aria-label="${isFavorite?'お気に入り解除':'お気に入り登録'}">${isFavorite?'♥':'♡'}</button></div><div class="book-body"><div class="book-cover">${coverHtml}</div><div class="book-details"><h3 class="book-title">${esc(b.title)}</h3><dl class="meta"><dt>著者</dt><dd>${esc(b.author)||'—'}</dd><dt>イラスト</dt><dd>${esc(b.illustrator)||'—'}</dd><dt>レーベル</dt><dd>${esc(b.label)||'—'}</dd><dt>ジャンル</dt><dd>${esc(b.genre)||'—'}</dd></dl><div class="tags"><span class="tag">${esc(date)}</span><span class="tag ${statusCls}">${esc(b.publication)||'未設定'}</span></div></div></div>${links?`<div class="links">${links}</div>`:''}`;
+  card.querySelector(".favorite-button").addEventListener("click", () => toggleFavorite(key));
   const image = card.querySelector('.book-cover-image');
   if (image) image.addEventListener('error', () => {
     image.replaceWith(Object.assign(document.createElement('div'), {
@@ -74,6 +82,7 @@ function update() {
     if (month && Number(date.slice(5,7)) !== Number(month)) return false;
     if (status && b.status !== status) return false;
     if (!matchesGenre(b.genre, genre)) return false;
+    if ($('favorites-only').checked && !favorites.has(bookKey(b))) return false;
     if (!query) return true;
     const fields = field === 'all' ? ['title','author','illustrator','label'] : [field];
     return fields.some(k => norm(b[k]).includes(query));
@@ -131,8 +140,10 @@ async function init(){
     const monthSelect = $('month');
     monthSelect.replaceChildren(new Option('すべての月', ''));
     for (let m=1; m<=12; m++) monthSelect.add(new Option(`${m}月`, String(m)));
+    $('loading').hidden = true;
     update();
   } catch(e) {
+    $('loading').hidden = true;
     $('hint').textContent = 'データの読み込みに失敗しました';
     $('empty').hidden = false;
     $('empty').textContent = 'データを読み込めませんでした。APIのデプロイ設定とURLをご確認ください。';
@@ -150,4 +161,5 @@ $('clear').addEventListener('click', () => {
   $('sort').value = 'title'; update();
 });
 $('more').addEventListener('click', appendPage);
+$('favorites-only').addEventListener('change', update);
 init();

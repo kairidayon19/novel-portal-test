@@ -20,7 +20,7 @@
         <div class="wrap">
             <div class="eyebrow">LIGHT NOVEL LIBRARY</div>
             <h1><span class="hero-years">2022年～2026年</span><span class="hero-main">おすすめライトノベル テスト環境</span></h1>
-            <p>おすすめの一冊を探そう。</p>
+            <p>おすすめの一冊を探そう。</p><nav class="site-nav" aria-label="サイトメニュー"><a href="index.html" aria-current="page">📚 作品一覧</a><a href="contributors.html">👥 協力者紹介</a></nav>
         </div>
     </header>
     <main class="wrap">
@@ -49,7 +49,6 @@
                         <option value="完結">完結</option>
                         <option value="継続">継続</option>
                         <option value="打ち切り">打ち切り</option>
-                        <option value="その他">その他・未設定</option>
                     </select></label></div>
             <fieldset class="genre-fieldset" aria-labelledby="genre-heading">
                 <legend id="genre-heading">ジャンル <span id="genre-selected-count" class="genre-count"></span></legend>
@@ -60,6 +59,7 @@
         </section>
         <section class="results" aria-label="検索結果">
             <div class="results-bar">
+                <label class="favorites-toggle"><input id="favorites-only" type="checkbox"> ♥ お気に入りのみ</label>
                 <div>
                     <h2>検索結果 <span id="count">—</span><span class="unit">作品</span></h2>
                     <p id="hint">データを読み込み中…</p>
@@ -71,6 +71,7 @@
                         <option value="label">レーベル順</option>
                     </select></label>
             </div>
+            <div id="loading" class="loading" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span><strong>作品情報を読み込んでいます</strong><span>少々お待ちください…</span></div>
             <div id="cards" class="cards" aria-live="polite"></div>
             <div id="empty" class="empty" hidden>該当する作品がありません。条件を変更してお試しください。</div>
             <div class="more-row"><button id="more" type="button" hidden>さらに表示する</button></div>

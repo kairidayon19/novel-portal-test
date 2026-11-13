@@ -10,28 +10,53 @@ const PAGE_SIZE = 24;
 const collator = new Intl.Collator('ja', {numeric:true, sensitivity:'base'});
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function safeUrl(url) {try {const u = new URL(url);return ['https:','http:'].includes(u.protocol) ? u.href : '';} catch{return '';}}
+function genreTags(value) {
+  // 明示的な区切り文字のみ分割。例: 「青春ラブコメ」は1ジャンルとして保持。
+  const genres = String(value ?? '').split(/[、,，\n／/]+/).map(x => x.trim()).filter(Boolean);
+  return genres.length ? genres.map(g => `<span class="genre-pill">${esc(g)}</span>`).join('') : '—';
+}
 function makeCard(b) {
-  const card=document.createElement('article');card.className='book';
-  const links=[['BOOK☆WALKER',b.bookwalker,''],['Amazon',b.amazon,'amazon']].filter(x=>safeUrl(x[1])).map(([name,url,cls])=>`<a class="${cls}" href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer sponsored">${name} ↗</a>`).join('');
-  const statusCls=b.status==='打ち切り'?'stop':'status';
+  const card = document.createElement('article');
+  card.className = 'book';
+  const links = [['BOOK☆WALKER',b.bookwalker,''],['Amazon',b.amazon,'amazon']]
+    .filter(x => safeUrl(x[1]))
+    .map(([name,url,cls]) => `<a class="${cls}" href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer sponsored">${name} ↗</a>`).join('');
   const coverUrl = safeUrl(b.cover || '');
   const coverHtml = coverUrl
-    ? `<img class="book-cover-image" src="${esc(coverUrl)}" alt="${esc(b.title)}の表紙" loading="lazy" referrerpolicy="no-referrer">`
-    : '<div class="book-cover-placeholder" aria-label="表紙未登録">NO IMAGE</div>';
-  const date=b.date?`${b.date.slice(0,4)}年${Number(b.date.slice(5))}月`:'発売年月未設定';
-  const key=bookKey(b);
-  const isFavorite=favorites.has(key);
-  card.innerHTML=`<div class="book-card-head"><span>${b.isNew?'<span class="new-badge">NEW</span>':''}</span><button class="favorite-button ${isFavorite?'is-favorite':''}" type="button" aria-pressed="${isFavorite}" aria-label="${isFavorite?'お気に入り解除':'お気に入り登録'}">${isFavorite?'♥':'♡'}</button></div><div class="book-body"><div class="book-cover">${coverHtml}</div><div class="book-details"><h3 class="book-title">${esc(b.title)}</h3><dl class="meta"><dt>著者</dt><dd>${esc(b.author)||'—'}</dd><dt>イラスト</dt><dd>${esc(b.illustrator)||'—'}</dd><dt>レーベル</dt><dd>${esc(b.label)||'—'}</dd><dt>ジャンル</dt><dd>${esc(b.genre)||'—'}</dd></dl><div class="tags"><span class="tag">${esc(date)}</span><span class="tag ${statusCls}">${esc(b.publication)||'未設定'}</span></div></div></div>${links?`<div class="links">${links}</div>`:''}`;
-  card.querySelector(".favorite-button").addEventListener("click", () => toggleFavorite(key));
+    ? `<img class="book-cover-image" src="${esc(coverUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+    : '<span class="book-cover-placeholder">NO IMAGE</span>';
+  const date = b.date ? `${b.date.slice(0,4)}年${Number(b.date.slice(5))}月` : '未設定';
+  const key = bookKey(b);
+  const isFavorite = favorites.has(key);
+  card.innerHTML = `
+    ${b.isNew ? '<div class="book-card-head"><span class="new-badge">NEW</span></div>' : ''}
+    <h3 class="book-title">${esc(b.title)}</h3>
+    <div class="book-body">
+      <button class="book-cover favorite-cover ${isFavorite ? 'is-favorite' : ''}" type="button"
+        aria-pressed="${isFavorite}" aria-label="${esc(b.title)}を${isFavorite ? 'お気に入りから解除' : 'お気に入りに登録'}">
+        ${coverHtml}<span class="favorite-check" aria-hidden="true">${isFavorite ? '♥' : '♡'}</span>
+      </button>
+      <div class="book-details">
+        <dl class="meta">
+          <dt>著者</dt><dd>${esc(b.author) || '—'}</dd>
+          <dt>イラスト</dt><dd>${esc(b.illustrator) || '—'}</dd>
+          <dt>レーベル</dt><dd>${esc(b.label) || '—'}</dd>
+          <dt>発売日</dt><dd>${esc(date)}</dd>
+          <dt>刊行状況</dt><dd>${esc(b.publication) || '未設定'}</dd>
+          <dt>ジャンル</dt><dd class="book-genres">${genreTags(b.genre)}</dd>
+        </dl>
+      </div>
+    </div>${links ? `<div class="links">${links}</div>` : ''}`;
+  card.querySelector('.favorite-cover').addEventListener('click', () => toggleFavorite(key));
   const image = card.querySelector('.book-cover-image');
   if (image) image.addEventListener('error', () => {
-    image.replaceWith(Object.assign(document.createElement('div'), {
-      className: 'book-cover-placeholder',
-      textContent: 'NO IMAGE'
+    image.replaceWith(Object.assign(document.createElement('span'), {
+      className: 'book-cover-placeholder', textContent: 'NO IMAGE'
     }));
   }, {once:true});
   return card;
 }
+
 function appendPage(){const fragment=document.createDocumentFragment();visible.slice(shown,shown+PAGE_SIZE).forEach(b=>fragment.appendChild(makeCard(b)));$('cards').appendChild(fragment);shown=Math.min(shown+PAGE_SIZE,visible.length);$('more').hidden=shown>=visible.length;}
 const norm = value => String(value ?? '').normalize('NFKC').toLocaleLowerCase();
 let genreOptions = [];

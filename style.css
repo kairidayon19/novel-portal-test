@@ -99,3 +99,40 @@ select:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid 
 .contributors-heading{text-align:center;font-size:24px;margin:8px 0 8px}
 .contributors-intro{text-align:center;color:#687991;margin:0 0 24px}
 @media(max-width:700px){.site-nav{gap:8px 14px}.site-nav a{flex:none;font-size:14px;padding:8px 10px}.hero .hero-main{font-size:clamp(26px,6.8vw,38px)}}
+
+/* Book card layout: title above, tappable cover and BOOK☆WALKER-style check */
+.book-title{margin:0;font-size:16px;line-height:1.55;overflow-wrap:anywhere}
+.book-body{display:grid;grid-template-columns:112px minmax(0,1fr);gap:16px;align-items:start}
+.book-cover.favorite-cover{position:relative;display:block;width:112px;aspect-ratio:2/3;height:auto;padding:0;overflow:visible;border:1px solid #dfe6f0;border-radius:8px;background:#fff;cursor:pointer}
+.favorite-cover .book-cover-image{width:100%;height:100%;border-radius:7px;object-fit:contain}
+.favorite-cover .book-cover-placeholder{height:100%;display:flex;align-items:center;justify-content:center}
+.favorite-check{position:absolute;right:-7px;bottom:-7px;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:2px solid #a8b6c9;background:#fff;color:transparent;box-shadow:0 2px 6px #1d2e481f;font-size:21px;font-weight:900;line-height:1}
+.favorite-cover.is-favorite .favorite-check{background:#238b62;border-color:#238b62;color:#fff}
+.favorite-cover:hover .favorite-check{box-shadow:0 0 0 3px #238b6229}
+.favorite-cover:focus-visible{outline:3px solid #7ea6f2;outline-offset:5px}
+.book-details .meta{grid-template-columns:75px minmax(0,1fr);gap:7px 8px}
+.book-genres{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.book-genres .genre-pill{margin:0;background:#eef3fa;color:#425a80;padding:4px 8px;border-radius:7px}
+@media(max-width:420px){.book-body{grid-template-columns:90px minmax(0,1fr);gap:12px}.book-cover.favorite-cover{width:90px}.book-details .meta{grid-template-columns:65px minmax(0,1fr);font-size:12px}.favorite-check{width:29px;height:29px}}
+
+/* Collaborator's one optional external link */
+.contributor-external-link{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border:1px solid #cbd9d1;border-radius:9px;background:#f5faf7;color:#24553e;font-weight:700;text-decoration:none;max-width:100%;overflow-wrap:anywhere}
+.contributor-external-link::after{content:"↗";font-size:13px}
+.contributor-external-link:hover,.contributor-external-link:focus-visible{background:#e7f3eb;text-decoration:underline}
+
+/* Favorite heart overlay */
+.favorite-check{color:#7b879a;font-size:23px;font-weight:700}
+.favorite-cover.is-favorite .favorite-check{background:#fff0f4;border-color:#d43d66;color:#d43d66}
+.favorite-cover:hover .favorite-check{box-shadow:0 0 0 3px #d43d6629}
+
+/* Cream background for each book title */
+.book .book-title {
+  background: #F5EAD4;
+  color: #513E2D;
+  padding: 11px 14px;
+  border-radius: 9px;
+  line-height: 1.55;
+}
+@media (max-width: 420px) {
+  .book .book-title { padding: 10px 12px; }
+}

@@ -136,3 +136,16 @@ select:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid 
 @media (max-width: 420px) {
   .book .book-title { padding: 10px 12px; }
 }
+
+/* Quick filters next to search-target radio buttons */
+.search-target-row{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;flex-wrap:wrap}
+.search-target-row .radios{flex:1 1 auto}
+.quick-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.quick-filter{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid #cbd6e8;border-radius:9px;background:#f7f9fd;color:#304b77;font-size:13px;font-weight:750;white-space:nowrap;cursor:pointer}
+.quick-filter input{width:17px;height:17px;accent-color:#315db3;cursor:pointer}
+.quick-filter:has(input:checked){border-color:#315db3;background:#e8f1ff;color:#183f83}
+.quick-filter:focus-within{outline:2px solid #7ea6f2;outline-offset:2px}
+/* NEW badge directly after book title, with strong contrast */
+.book .book-title{display:block}
+.new-badge-inline{display:inline-block;vertical-align:baseline;margin-left:9px;padding:3px 9px;border-radius:5px;background:#d52e35;color:#fff;font-size:12px;font-weight:900;line-height:1.5;letter-spacing:.05em;white-space:nowrap;box-shadow:0 1px 4px #9c172c38}
+@media(max-width:700px){.search-target-row{align-items:flex-start}.quick-filters{width:100%;gap:8px}.quick-filter{font-size:12px}}

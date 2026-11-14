@@ -29,8 +29,7 @@ function makeCard(b) {
   const key = bookKey(b);
   const isFavorite = favorites.has(key);
   card.innerHTML = `
-    ${b.isNew ? '<div class="book-card-head"><span class="new-badge">NEW</span></div>' : ''}
-    <h3 class="book-title">${esc(b.title)}</h3>
+    <h3 class="book-title"><span class="book-title-text">${esc(b.title)}</span>${b.isNew ? '<span class="new-badge new-badge-inline">NEW</span>' : ''}</h3>
     <div class="book-body">
       <button class="book-cover favorite-cover ${isFavorite ? 'is-favorite' : ''}" type="button"
         aria-pressed="${isFavorite}" aria-label="${esc(b.title)}を${isFavorite ? 'お気に入りから解除' : 'お気に入りに登録'}">
@@ -108,6 +107,7 @@ function update() {
     if (status && b.status !== status) return false;
     if (!matchesGenre(b.genre, genre)) return false;
     if ($('favorites-only').checked && !favorites.has(bookKey(b))) return false;
+    if ($('new-only').checked && !b.isNew) return false;
     if (!query) return true;
     const fields = field === 'all' ? ['title','author','illustrator','label'] : [field];
     return fields.some(k => norm(b[k]).includes(query));
@@ -119,6 +119,7 @@ function update() {
     : collator.compare(a[sort] ?? '', b[sort] ?? ''));
   $('count').textContent = visible.length.toLocaleString('ja-JP');
   $('hint').textContent = `全${books.length.toLocaleString('ja-JP')}作品から検索`;
+  $('loading').hidden = true;
   $('cards').replaceChildren(); $('empty').hidden = visible.length !== 0;
   shown = 0; markSelections(); appendPage();
 }
@@ -182,9 +183,12 @@ $('clear').addEventListener('click', () => {
   $('search').value = '';
   document.querySelector('input[name="field"][value="all"]').checked = true;
   ['year','month','status'].forEach(id => $(id).value = '');
+  $('favorites-only').checked = false;
+  $('new-only').checked = false;
   document.querySelectorAll('#genre-checkboxes input').forEach(el => el.checked = false);
   $('sort').value = 'title'; update();
 });
 $('more').addEventListener('click', appendPage);
 $('favorites-only').addEventListener('change', update);
+$('new-only').addEventListener('change', update);
 init();

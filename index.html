@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="おすすめライトノベルの作品一覧。作品名・著者・イラスト・レーベルで検索できます。">
     <title>2022年～2026年 おすすめライトノベル テスト環境</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./style.css?v=20261114d">
 </head>
 
 <body>
@@ -31,11 +31,11 @@
                     class="clear">条件クリア</button></div>
             <fieldset>
                 <legend>検索対象</legend>
-                <div class="radios"><label><input type="radio" name="field" value="all" checked>すべて</label><label><input
+                <div class="search-target-row"><div class="radios"><label><input type="radio" name="field" value="all" checked>すべて</label><label><input
                             type="radio" name="field" value="title">作品名</label><label><input type="radio" name="field"
                             value="author">著者</label><label><input type="radio" name="field"
                             value="illustrator">イラスト</label><label><input type="radio" name="field"
-                            value="label">レーベル</label></div>
+                            value="label">レーベル</label></div><div class="quick-filters"><label class="quick-filter"><input id="new-only" type="checkbox"> <span>NEWのみ</span></label><label class="quick-filter"><input id="favorites-only" type="checkbox"> <span>♥ お気に入りのみ</span></label></div></div>
             </fieldset>
             <details class="filter-details" id="filter-details">
                 <summary class="filter-toggle"><span class="filter-toggle-title">絞り込み <span id="filter-active-count" class="filter-active-count" hidden></span></span><span class="filter-toggle-hint">年・月・刊行状況・ジャンル</span><span class="filter-toggle-chevron" aria-hidden="true"></span></summary>
@@ -59,7 +59,6 @@
         </section>
         <section class="results" aria-label="検索結果">
             <div class="results-bar">
-                <label class="favorites-toggle"><input id="favorites-only" type="checkbox"> ♥ お気に入りのみ</label>
                 <div>
                     <h2>検索結果 <span id="count">—</span><span class="unit">作品</span></h2>
                     <p id="hint">データを読み込み中…</p>
@@ -81,7 +80,7 @@
         <p>※継続・打ち切り情報については確定ではありません。</p>
         <p>作品データは管理者が登録しています。購入先は外部サイトに移動します。</p>
     </footer>
-    <script src="app.js" defer></script>
+    <script src="app.js?v=20261114d" defer></script>
 </body>
 
 </html>
